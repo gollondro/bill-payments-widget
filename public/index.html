@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill Payments - Pago de Servicios</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0B5FFF;
+      --primary-dark: #0747CC;
+      --secondary: #00B894;
+      --bg-main: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --text-primary: #12405F;
+      --text-secondary: #64748B;
+      --border: rgba(0,0,0,0.08);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+      --radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 2rem;
+      color: white;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+    }
+
+    .tab:hover {
+      background: #EEF2FF;
+      color: var(--primary);
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .widget-container {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      min-height: 600px;
+      position: relative;
+    }
+
+    .widget-frame {
+      width: 100%;
+      height: 650px;
+      border: none;
+      display: none;
+    }
+
+    .widget-frame.active {
+      display: block;
+    }
+
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .loading::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 1rem;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .status-panel {
+      margin-top: 1.5rem;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .status-panel h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-panel h3::before {
+      content: '📋';
+    }
+
+    .event-log {
+      background: #1E293B;
+      color: #E2E8F0;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 0.8rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .event-log:empty::before {
+      content: 'Esperando eventos del widget...';
+      color: #64748B;
+    }
+
+    .event-log .event {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #334155;
+    }
+
+    .event-log .event:last-child {
+      border-bottom: none;
+    }
+
+    .event-log .time {
+      color: #94A3B8;
+      margin-right: 0.5rem;
+    }
+
+    .event-log .type-complete {
+      color: #4ADE80;
+    }
+
+    .event-log .type-exit {
+      color: #FB923C;
+    }
+
+    .quote-card {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .quote-card h4 {
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      color: var(--primary-dark);
+    }
+
+    .quote-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .quote-item {
+      font-size: 0.85rem;
+    }
+
+    .quote-item label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .quote-item span {
+      font-weight: 600;
+    }
+
+    .btn-pay {
+      margin-top: 1rem;
+      padding: 0.75rem 2rem;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-pay:hover {
+      background: #00A381;
+      transform: translateY(-1px);
+    }
+
+    .btn-pay:disabled {
+      background: #94A3B8;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .user-config {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .user-config label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .user-config input {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      width: 200px;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .tabs {
+        flex-direction: column;
+      }
+      
+      .tab {
+        text-align: center;
+      }
+      
+      .widget-frame {
+        height: 550px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>💳 Bill Payments</h1>
+    <p>Paga servicios, recargas y vouchers de forma segura</p>
+  </header>
+
+  <main class="container">
+    <!-- Configuración de usuario -->
+    <div class="user-config">
+      <label for="userId">ID de Usuario:</label>
+      <input type="text" id="userId" value="demo-user-001" placeholder="Ingresa tu ID">
+    </div>
+
+    <!-- Tabs de navegación -->
+    <div class="tabs">
+      <button class="tab active" data-widget="debt-search">
+        🏠 Servicios
+      </button>
+      <button class="tab" data-widget="recharges">
+        📱 Recargas
+      </button>
+      <button class="tab" data-widget="vouchers">
+        🎮 Vouchers
+      </button>
+      <button class="tab" data-widget="tracker">
+        📊 Tracker
+      </button>
+    </div>
+
+    <!-- Contenedor del Widget -->
+    <div class="widget-container">
+      <div class="loading" id="loading">Cargando widget...</div>
+      
+      <iframe 
+        id="widget-debt-search" 
+        class="widget-frame active"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      ></iframe>
+      
+      <iframe 
+        id="widget-recharges" 
+        class="widget-frame"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      ></iframe>
+      
+      <iframe 
+        id="widget-vouchers" 
+        class="widget-frame"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      ></iframe>
+      
+      <iframe 
+        id="widget-tracker" 
+        class="widget-frame"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+      ></iframe>
+    </div>
+
+    <!-- Panel de Estado y Eventos -->
+    <div class="status-panel">
+      <h3>Log de Eventos</h3>
+      <div class="event-log" id="eventLog"></div>
+      
+      <!-- Card de Quote (se muestra al recibir onComplete) -->
+      <div class="quote-card" id="quoteCard" style="display: none;">
+        <h4>📄 Quote Recibido</h4>
+        <div class="quote-grid" id="quoteDetails"></div>
+        <button class="btn-pay" id="btnPay" onclick="processPayment()">
+          Confirmar Pago
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ============================================
+    // CONFIGURACIÓN Y ESTADO
+    // ============================================
+    let widgetConfig = {};
+    let currentQuote = null;
+
+    // Theming del widget
+    window.rmt = {
+      theme: {
+        typography: "DM Sans",
+        primaryColor: "#0B5FFF",
+        secondaryColor: "#00B894",
+        borderColor: "rgba(0,0,0,0.12)",
+        borderWidth: 1,
+        borderRadius: 12,
+        inputBorderWidth: 1,
+        inputBorderColor: "rgba(0,0,0,0.12)",
+        inputBorderRadius: 8,
+        buttonBorderRadius: 8,
+        bgColor: "#FFFFFF",
+        fgColor: "#12405F",
+        shadow: "0 4px 4px -4px #0C0C0D0D, 0 16px 16px -8px #0C0C0D1A",
+        primaryContrastColor: "rgba(255,255,255,0.9)"
+      }
+    };
+
+    // ============================================
+    // INICIALIZACIÓN
+    // ============================================
+    async function init() {
+      try {
+        // Obtener configuración del servidor
+        const response = await fetch('/api/config');
+        widgetConfig = await response.json();
+        
+        if (!widgetConfig.widgetBaseUrl || !widgetConfig.clientId) {
+          logEvent('error', 'Configuración incompleta. Revisa las variables de entorno.');
+          return;
+        }
+
+        // Cargar widget inicial
+        loadWidget('debt-search');
+        
+        // Configurar tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+          tab.addEventListener('click', () => switchWidget(tab.dataset.widget));
+        });
+
+        // Escuchar eventos del widget
+        window.addEventListener('message', handleWidgetMessage);
+        
+        logEvent('info', 'Sistema inicializado correctamente');
+      } catch (error) {
+        logEvent('error', `Error inicializando: ${error.message}`);
+      }
+    }
+
+    // ============================================
+    // GESTIÓN DE WIDGETS
+    // ============================================
+    function buildWidgetUrl(type) {
+      const userId = document.getElementById('userId').value || 'demo-user';
+      const baseUrl = widgetConfig.widgetBaseUrl;
+      const clientId = widgetConfig.clientId;
+      
+      const commonParams = new URLSearchParams({
+        clientId: clientId,
+        userId: userId,
+        plain: 'true',
+        userCountry: 'ESP',
+        userCurrency: 'EUR'
+      });
+
+      switch (type) {
+        case 'debt-search':
+          commonParams.append('showReminder', 'true');
+          return `${baseUrl}/view-port/debt-search?${commonParams}`;
+        
+        case 'recharges':
+          commonParams.append('module', 'RECHARGE');
+          return `${baseUrl}/view-port/top-ups?${commonParams}`;
+        
+        case 'vouchers':
+          commonParams.append('module', 'VOUCHER');
+          return `${baseUrl}/view-port/top-ups?${commonParams}`;
+        
+        case 'tracker':
+          // Para tracker necesitas un paymentId específico
+          // Por ahora solo carga la base
+          return `${baseUrl}/view-port/tracker?${commonParams}`;
+        
+        default:
+          return '';
+      }
+    }
+
+    function loadWidget(type) {
+      const iframe = document.getElementById(`widget-${type}`);
+      const url = buildWidgetUrl(type);
+      
+      if (url && iframe.src !== url) {
+        document.getElementById('loading').style.display = 'block';
+        iframe.src = url;
+        iframe.onload = () => {
+          document.getElementById('loading').style.display = 'none';
+        };
+      }
+    }
+
+    function switchWidget(type) {
+      // Actualizar tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.widget === type);
+      });
+      
+      // Mostrar iframe correspondiente
+      document.querySelectorAll('.widget-frame').forEach(frame => {
+        frame.classList.remove('active');
+      });
+      document.getElementById(`widget-${type}`).classList.add('active');
+      
+      // Cargar widget si no está cargado
+      loadWidget(type);
+      
+      // Ocultar quote anterior
+      hideQuoteCard();
+      
+      logEvent('info', `Widget cambiado a: ${type}`);
+    }
+
+    // ============================================
+    // MANEJO DE EVENTOS DEL WIDGET
+    // ============================================
+    function handleWidgetMessage(event) {
+      try {
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+        
+        if (!data.type) return;
+        
+        switch (data.type) {
+          case 'onComplete':
+            handleOnComplete(data.detail);
+            break;
+          
+          case 'onExit':
+            handleOnExit();
+            break;
+          
+          default:
+            logEvent('info', `Evento recibido: ${data.type}`);
+        }
+      } catch (e) {
+        // Ignorar mensajes que no son del widget
+      }
+    }
+
+    function handleOnComplete(quote) {
+      currentQuote = quote;
+      logEvent('complete', `Quote recibido: ${quote.id} - ${quote.companyName}`);
+      showQuoteCard(quote);
+    }
+
+    function handleOnExit() {
+      logEvent('exit', 'Usuario cerró el widget');
+      hideQuoteCard();
+    }
+
+    // ============================================
+    // UI: QUOTE CARD
+    // ============================================
+    function showQuoteCard(quote) {
+      const card = document.getElementById('quoteCard');
+      const details = document.getElementById('quoteDetails');
+      
+      details.innerHTML = `
+        <div class="quote-item">
+          <label>ID Quote</label>
+          <span>${quote.id}</span>
+        </div>
+        <div class="quote-item">
+          <label>Empresa</label>
+          <span>${quote.companyName}</span>
+        </div>
+        <div class="quote-item">
+          <label>Tipo</label>
+          <span>${quote.productType}</span>
+        </div>
+        <div class="quote-item">
+          <label>Monto a Pagar</label>
+          <span>${quote.amount.targetValue} ${quote.targetCurrency}</span>
+        </div>
+        <div class="quote-item">
+          <label>Costo</label>
+          <span>${quote.amount.costAmount} ${quote.costCurrency}</span>
+        </div>
+        <div class="quote-item">
+          <label>Tasa de Cambio</label>
+          <span>${quote.exchangeRate}</span>
+        </div>
+        <div class="quote-item">
+          <label>Expira</label>
+          <span>${new Date(quote.expirationDate).toLocaleString()}</span>
+        </div>
+        ${quote.identifier ? `
+        <div class="quote-item">
+          <label>${quote.identifier.description}</label>
+          <span>${quote.identifier.value}</span>
+        </div>
+        ` : ''}
+      `;
+      
+      card.style.display = 'block';
+    }
+
+    function hideQuoteCard() {
+      document.getElementById('quoteCard').style.display = 'none';
+      currentQuote = null;
+    }
+
+    // ============================================
+    // PROCESAMIENTO DE PAGO
+    // ============================================
+    async function processPayment() {
+      if (!currentQuote) {
+        logEvent('error', 'No hay quote para procesar');
+        return;
+      }
+
+      // Verificar expiración
+      if (new Date(currentQuote.expirationDate) < new Date()) {
+        logEvent('error', 'Quote expirado. Por favor genera uno nuevo.');
+        hideQuoteCard();
+        return;
+      }
+
+      const btn = document.getElementById('btnPay');
+      btn.disabled = true;
+      btn.textContent = 'Procesando...';
+
+      try {
+        const externalReferenceId = `pay-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        let endpoint = '';
+        let payload = {
+          quoteId: currentQuote.id,
+          amount: currentQuote.amount.targetValue,
+          costAmount: currentQuote.amount.costAmount,
+          externalReferenceId,
+          paymentMethod: 'DEBIT'
+        };
+
+        // Seleccionar endpoint según tipo
+        switch (currentQuote.productType) {
+          case 'SERVICE':
+            endpoint = '/api/pay/service';
+            break;
+          
+          case 'RECHARGE':
+            endpoint = '/api/pay/recharge';
+            if (currentQuote.identifier) {
+              payload.identifierName = currentQuote.identifier.identifierName;
+              payload.identifierValue = currentQuote.identifier.value;
+            }
+            break;
+          
+          case 'VOUCHER':
+            endpoint = '/api/pay/voucher';
+            break;
+        }
+
+        logEvent('info', `Enviando pago a ${endpoint}...`);
+        
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          logEvent('complete', `Pago exitoso! ID: ${result.id || result.paymentId}`);
+          
+          // Iniciar polling del estado
+          if (result.id || result.paymentId) {
+            pollPaymentStatus(result.id || result.paymentId);
+          }
+        } else {
+          logEvent('error', `Error en pago: ${result.error || 'Error desconocido'}`);
+        }
+      } catch (error) {
+        logEvent('error', `Error de conexión: ${error.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Confirmar Pago';
+        hideQuoteCard();
+      }
+    }
+
+    // ============================================
+    // POLLING DE ESTADO
+    // ============================================
+    async function pollPaymentStatus(paymentId, attempts = 0) {
+      if (attempts > 10) {
+        logEvent('info', 'Polling finalizado. Verifica el estado manualmente.');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/operation/${paymentId}`);
+        const result = await response.json();
+        
+        const status = result.status || result.state;
+        logEvent('info', `Estado del pago: ${status}`);
+        
+        // Estados finales
+        if (['SETTLED', 'COMPLETED', 'REVERSED', 'FAILED'].includes(status)) {
+          logEvent(status === 'SETTLED' || status === 'COMPLETED' ? 'complete' : 'error', 
+                   `Pago finalizado con estado: ${status}`);
+          return;
+        }
+        
+        // Continuar polling con backoff exponencial
+        const delay = Math.min(1000 * Math.pow(2, attempts), 30000);
+        setTimeout(() => pollPaymentStatus(paymentId, attempts + 1), delay);
+        
+      } catch (error) {
+        logEvent('error', `Error consultando estado: ${error.message}`);
+      }
+    }
+
+    // ============================================
+    // LOG DE EVENTOS
+    // ============================================
+    function logEvent(type, message) {
+      const log = document.getElementById('eventLog');
+      const time = new Date().toLocaleTimeString();
+      
+      const event = document.createElement('div');
+      event.className = 'event';
+      event.innerHTML = `
+        <span class="time">[${time}]</span>
+        <span class="type-${type}">${message}</span>
+      `;
+      
+      log.insertBefore(event, log.firstChild);
+      
+      // Limitar a 50 eventos
+      while (log.children.length > 50) {
+        log.removeChild(log.lastChild);
+      }
+    }
+
+    // Iniciar aplicación
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
