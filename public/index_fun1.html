@@ -3,23 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AFEX - Pago de Servicios</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Bill Payments - Pago de Servicios</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Colores AFEX */
-      --afex-green: #00A651;
-      --afex-green-dark: #008542;
-      --afex-green-light: #00C853;
-      --secondary: #12405F;
-      --bg-main: #F5F7FA;
+      --primary: #0B5FFF;
+      --primary-dark: #0747CC;
+      --secondary: #00B894;
+      --bg-main: #F8FAFC;
       --bg-card: #FFFFFF;
-      --text-primary: #1A1A1A;
+      --text-primary: #12405F;
       --text-secondary: #64748B;
       --border: rgba(0,0,0,0.08);
       --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
       --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-      --radius: 12px;
+      --radius: 16px;
     }
 
     * {
@@ -29,43 +27,28 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg-main);
       color: var(--text-primary);
       min-height: 100vh;
     }
 
     .header {
-      background: linear-gradient(135deg, var(--afex-green) 0%, var(--afex-green-dark) 100%);
-      padding: 1.5rem 2rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 2rem;
       color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
+      text-align: center;
     }
 
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .logo-svg {
-      height: 40px;
-      width: auto;
-    }
-
-    .header-text h1 {
-      font-size: 1.5rem;
+    .header h1 {
+      font-size: 1.75rem;
       font-weight: 700;
-      letter-spacing: -0.5px;
+      margin-bottom: 0.5rem;
     }
 
-    .header-text p {
+    .header p {
       opacity: 0.9;
-      font-size: 0.85rem;
-      font-weight: 400;
+      font-size: 0.95rem;
     }
 
     .container {
@@ -96,12 +79,12 @@
     }
 
     .tab:hover {
-      background: #E8F5E9;
-      color: var(--afex-green);
+      background: #EEF2FF;
+      color: var(--primary);
     }
 
     .tab.active {
-      background: var(--afex-green);
+      background: var(--primary);
       color: white;
     }
 
@@ -112,7 +95,6 @@
       overflow: hidden;
       min-height: 600px;
       position: relative;
-      border: 1px solid var(--border);
     }
 
     .widget-frame {
@@ -141,7 +123,7 @@
       height: 40px;
       margin: 0 auto 1rem;
       border: 3px solid var(--border);
-      border-top-color: var(--afex-green);
+      border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
@@ -156,7 +138,6 @@
       border-radius: var(--radius);
       padding: 1.5rem;
       box-shadow: var(--shadow);
-      border: 1px solid var(--border);
     }
 
     .status-panel h3 {
@@ -165,7 +146,6 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: var(--afex-green-dark);
     }
 
     .status-panel h3::before {
@@ -221,15 +201,15 @@
     .quote-card {
       margin-top: 1rem;
       padding: 1rem;
-      background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+      background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
       border-radius: 12px;
-      border-left: 4px solid var(--afex-green);
+      border-left: 4px solid var(--primary);
     }
 
     .quote-card h4 {
       font-size: 0.9rem;
       margin-bottom: 0.75rem;
-      color: var(--afex-green-dark);
+      color: var(--primary-dark);
     }
 
     .quote-grid {
@@ -256,7 +236,7 @@
     .btn-pay {
       margin-top: 1rem;
       padding: 0.75rem 2rem;
-      background: var(--afex-green);
+      background: var(--secondary);
       color: white;
       border: none;
       border-radius: 8px;
@@ -268,7 +248,7 @@
     }
 
     .btn-pay:hover {
-      background: var(--afex-green-dark);
+      background: #00A381;
       transform: translateY(-1px);
     }
 
@@ -292,37 +272,9 @@
       color: var(--text-primary);
     }
 
-    .config-badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      margin-left: 1rem;
-    }
-
-    .footer {
-      text-align: center;
-      padding: 1.5rem;
-      color: var(--text-secondary);
-      font-size: 0.8rem;
-    }
-
-    .footer a {
-      color: var(--afex-green);
-      text-decoration: none;
-    }
-
     @media (max-width: 640px) {
       .container {
         padding: 1rem;
-      }
-      
-      .header {
-        flex-direction: column;
-        text-align: center;
       }
       
       .tabs {
@@ -341,17 +293,8 @@
 </head>
 <body>
   <header class="header">
-    <div class="logo-container">
-      <!-- Logo AFEX SVG -->
-      <svg class="logo-svg" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <text x="0" y="30" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" fill="white">AFEX</text>
-      </svg>
-      <div class="header-text">
-        <h1>Bill Payments</h1>
-        <p>Paga servicios, recargas y vouchers</p>
-      </div>
-    </div>
-    <span class="config-badge">🇵🇪 Perú - PEN</span>
+    <h1>💳 Bill Payments</h1>
+    <p>Paga servicios, recargas y vouchers de forma segura</p>
   </header>
 
   <main class="container">
@@ -368,7 +311,7 @@
       </button>
     </div>
 
-    <!-- URL que se está cargando (debug) -->
+    <!-- URL que se está cargando -->
     <div class="url-display" id="urlDisplay">
       <strong>URL del widget:</strong> <span id="currentUrl">Cargando...</span>
     </div>
@@ -388,7 +331,7 @@
       <h3>Log de Eventos</h3>
       <div class="event-log" id="eventLog"></div>
       
-      <!-- Card de Quote -->
+      <!-- Card de Quote (se muestra al recibir onComplete) -->
       <div class="quote-card" id="quoteCard" style="display: none;">
         <h4>📄 Quote Recibido</h4>
         <div class="quote-grid" id="quoteDetails"></div>
@@ -399,17 +342,10 @@
     </div>
   </main>
 
-  <footer class="footer">
-    <p>Powered by <a href="https://www.afex.cl" target="_blank">AFEX</a> · Cambio de divisas y transferencias internacionales</p>
-  </footer>
-
   <script>
     // ============================================
-    // CONFIGURACIÓN - PERÚ
+    // CONFIGURACIÓN
     // ============================================
-    const USER_COUNTRY = 'PER';
-    const USER_CURRENCY = 'PEN';
-    
     let widgetConfig = {};
     let currentQuote = null;
     let currentWidgetType = 'debt-search';
@@ -422,7 +358,7 @@
         const response = await fetch('/api/config');
         widgetConfig = await response.json();
         
-        logEvent('info', `Config cargada - País: ${USER_COUNTRY}, Moneda: ${USER_CURRENCY}`);
+        logEvent('info', `Config cargada: ${widgetConfig.widgetBaseUrl}`);
         
         if (!widgetConfig.widgetBaseUrl || !widgetConfig.clientId) {
           logEvent('error', 'Configuración incompleta. Revisa las variables de entorno.');
@@ -458,13 +394,18 @@
       const iframe = document.getElementById('widgetFrame');
       const loading = document.getElementById('loading');
       
+      // Mostrar loading
       loading.classList.remove('hidden');
       
+      // Construir URL
       const url = buildWidgetUrl(type);
+      
+      // Mostrar URL en pantalla para debug
       document.getElementById('currentUrl').textContent = url;
       
       logEvent('info', `Cargando widget: ${type}`);
       
+      // Cargar iframe
       iframe.src = url;
       
       iframe.onload = () => {
@@ -477,6 +418,7 @@
         logEvent('error', `Error cargando widget ${type}`);
       };
 
+      // Ocultar quote anterior
       hideQuoteCard();
     }
 
@@ -503,13 +445,16 @@
           break;
       }
 
-      return `${baseUrl}${path}?clientId=${clientId}&userId=${userId}&plain=true&userCountry=${USER_COUNTRY}&userCurrency=${USER_CURRENCY}${extraParams}`;
+      const url = `${baseUrl}${path}?clientId=${clientId}&userId=${userId}&plain=true&userCountry=PER&userCurrency=PEN${extraParams}`;
+      
+      return url;
     }
 
     // ============================================
     // MANEJO DE EVENTOS DEL WIDGET
     // ============================================
     function handleWidgetMessage(event) {
+      // Solo procesar mensajes del widget
       if (!event.origin.includes('azurewebsites.net')) {
         return;
       }
@@ -525,6 +470,7 @@
           case 'onComplete':
             handleOnComplete(data.detail);
             break;
+          
           case 'onExit':
             handleOnExit();
             break;
